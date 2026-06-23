@@ -22,7 +22,7 @@ export function GameControls({
       <div className="flex items-center gap-2">
         {isSupported && (
           <Button
-            variant={isListening ? 'secondary' : 'primary'}
+            variant={isListening ? 'secondary' : 'danger'}
             onClick={onStartStop}
             aria-pressed={isListening}
           >
