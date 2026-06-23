@@ -6,12 +6,53 @@ interface TranscriptPanelProps {
   error: string | null
 }
 
-const ERROR_MESSAGES: Record<string, string> = {
-  'not-allowed': 'Microphone access denied. Allow mic access and try again.',
-  'service-not-allowed': 'Microphone access denied by policy.',
-  'mic-unavailable': 'Mic disconnected or unavailable. Please check your hardware.',
-  'network': 'Network error — speech recognition needs an internet connection.',
-  'no-speech': 'No speech detected.',
+function MicPermissionHelp({ error }: { error: string }) {
+  const isPolicy = error === 'service-not-allowed'
+
+  return (
+    <div className="rounded-lg border border-red-200 bg-red-50 p-3 space-y-2">
+      <p className="text-xs font-semibold text-red-700">
+        {isPolicy
+          ? 'Microphone blocked by browser policy'
+          : 'Microphone access denied'}
+      </p>
+      <p className="text-xs text-red-600">To enable it:</p>
+      <ol className="text-xs text-red-600 space-y-1 list-decimal list-inside">
+        <li>
+          Click the <strong>lock 🔒</strong> or <strong>info ⓘ</strong> icon in your browser's
+          address bar
+        </li>
+        <li>
+          Find <strong>Microphone</strong> and change it to <strong>Allow</strong>
+        </li>
+        <li>Reload the page, then try again</li>
+      </ol>
+      {isPolicy && (
+        <p className="text-xs text-red-500 mt-1">
+          If this is a managed device, your organisation may need to allow microphone access for
+          this site.
+        </p>
+      )}
+    </div>
+  )
+}
+
+function ErrorMessage({ error }: { error: string }) {
+  if (error === 'not-allowed' || error === 'service-not-allowed') {
+    return <MicPermissionHelp error={error} />
+  }
+
+  const MESSAGES: Record<string, string> = {
+    'mic-unavailable': 'Mic disconnected or unavailable after 3 retries. Check your hardware and reload.',
+    'network': 'Network error — speech recognition requires an internet connection.',
+    'no-speech': 'No speech detected. Try speaking more clearly or check your mic.',
+  }
+
+  return (
+    <p className="text-xs text-red-600">
+      {MESSAGES[error] ?? `Speech error: ${error}`}
+    </p>
+  )
 }
 
 export function TranscriptPanel({
@@ -35,7 +76,6 @@ export function TranscriptPanel({
   return (
     <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-1.5">
       <div className="flex items-center gap-2">
-        {/* H11: ARIA label on pulsing mic dot */}
         <span
           aria-label={isListening ? 'Microphone active' : 'Microphone inactive'}
           className={
@@ -49,21 +89,15 @@ export function TranscriptPanel({
         </span>
       </div>
 
-      {error && (
-        <p className="text-xs text-red-600">{ERROR_MESSAGES[error] ?? `Error: ${error}`}</p>
-      )}
+      {error && <ErrorMessage error={error} />}
 
-      {/* M13: empty/silence state */}
       {!error && isListening && !transcript && !interimTranscript && (
         <p className="text-xs text-gray-400 italic">Waiting for speech…</p>
       )}
 
       {(transcript || interimTranscript) && (
         <div className="text-xs leading-relaxed">
-          {displayTranscript && (
-            <span className="text-gray-700">{displayTranscript}</span>
-          )}
-          {/* M14: interim text — use gray-500 (≥4.5:1 on white) not gray-400 */}
+          {displayTranscript && <span className="text-gray-700">{displayTranscript}</span>}
           {interimTranscript && (
             <span className="text-gray-500 italic"> {interimTranscript}</span>
           )}
