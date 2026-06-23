@@ -16,7 +16,7 @@ npm run preview      # Preview production build locally
 
 ## Stack
 
-React 18 + TypeScript · Vite · Tailwind CSS 3 · Web Speech API · canvas-confetti · localStorage · Vercel
+React 19 + TypeScript · Vite · Tailwind CSS 4 · Web Speech API · canvas-confetti · localStorage · Vercel
 
 No router — `App.tsx` manages a `Screen` union (`'landing' | 'category' | 'game' | 'win'`) with conditional rendering.
 
@@ -52,7 +52,7 @@ No external state library — game state lives in `App.tsx` and is passed down a
 
 Critical items to resolve before writing code:
 
-- **C1**: Add `@types/canvas-confetti` to devDependencies
+- **C1**: ~~Add `@types/canvas-confetti` to devDependencies~~ (resolved in Phase 1)
 - **C2**: Add `src/lib/utils.ts` (exports `cn()`) to Phase 3
 - **C3**: Decide on `GameContext.tsx` vs hooks-only state and document the ADR
 - **C4**: Add a fallback UI for browsers where `isSupported === false` (Firefox, non-Chromium)
